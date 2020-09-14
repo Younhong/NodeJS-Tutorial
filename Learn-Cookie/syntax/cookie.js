@@ -7,7 +7,15 @@ http.createServer(function(request, response) {
         cookies = cookie.parse(request.headers.cookie);
     }
     response.writeHead(200, {
-        'Set-Cookie':['yummy_cookie=choco', 'tasty_cookie=strawberry']
+        'Set-Cookie':[
+            'yummy_cookie=choco', 
+            'tasty_cookie=strawberry',
+            `Permanent=cookies: Max-Age=${60*60*24*30}`,
+            'Secure=Secure; Secure',
+            'HttpOnly=HttpOnly; HttpOnly',
+            'Path=Path; Path=/cookie',
+            'Domain=Domain; Domain=o2.org'
+        ]
     });
     response.end('Cookie!!');
 }).listen(3000);
