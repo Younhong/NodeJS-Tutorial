@@ -140,6 +140,23 @@ var app = http.createServer(function(request,response){
           response.end();
         })
       });
+    } else if (pathname === '/login') {
+      fs.readdir('./data', function(error, filelist) {
+        var title = 'Login';
+        var list = template.list(filelist);
+
+        var html = template.html(title, list, 
+          `<form action="login_process" method="POST">
+            <p><input type="text" name="email" placeholder="email"></p>
+            <p><input type="text" name="password" placeholder="password"></p>
+            <p><input type="submit"></p>
+          </form>`, 
+          `<a href="/create">create</a>`
+        );
+  
+        response.writeHead(200);
+        response.end(html);
+      });
     } else {
       response.writeHead(404);
       response.end('Not found');
