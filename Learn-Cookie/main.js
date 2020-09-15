@@ -5,6 +5,29 @@ var qs = require('querystring');
 var template = require('./lib/template.js');
 var path = require('path');
 var sanitizeHtml = require('sanitize-html');
+var cookie = require('cookie');
+
+function authIsOwner(request, response) {
+  var isOwner = false;
+  var cookies = {};
+  if (request.headers.cookie) {
+    cookies = cookie.parse(request.headers.cookie);
+  }
+  if (cookies.email === 'younhong@kakao.com' && cookies.password === '77777') {
+    isOwner = true;
+  }
+
+  return isOwner;
+}
+
+function authStatusUI(request, response) {
+  var authStatusUI = '<a href="/login">login</a>';
+  if (authIsOwner(request, response)) {
+    authStatusUI = '<a href="/logout_process">logout</a>';
+  }
+
+  return authStatusUI;
+}
 
 var app = http.createServer(function(request,response){
     var _url = request.url;
@@ -21,7 +44,8 @@ var app = http.createServer(function(request,response){
 
           var html = template.html(title, list, 
             `<h2>${title}</h2>${description}`, 
-            `<a href="/create">create</a>`
+            `<a href="/create">create</a>`,
+            authStatusUI(request, response)
           );
     
           response.writeHead(200);
@@ -45,7 +69,8 @@ var app = http.createServer(function(request,response){
               <form action="delete_process" method="post">
                 <input type="hidden" name="id" value="${sanitizedTitle}">
                 <input type="submit" value="delete">
-              </form>`
+              </form>`,
+              authStatusUI(request, response)
             );
       
             response.writeHead(200);
@@ -65,7 +90,7 @@ var app = http.createServer(function(request,response){
               <p><textarea name="description" placeholder="decription"></textarea></p>
               <p><input type="submit"></p>
             </form>
-          `, '');
+          `, '', authStatusUI(request, response));
   
         response.writeHead(200);
         response.end(html);
@@ -100,7 +125,8 @@ var app = http.createServer(function(request,response){
                 <p><input type="submit"></p>
               </form>
             `, `<a href="/topic/create">create</a> 
-            <a href="/topic/update/${title}">update</a>`
+            <a href="/topic/update/${title}">update</a>`,
+            authStatusUI(request, response)
           );
     
           response.writeHead(200);
@@ -156,6 +182,44 @@ var app = http.createServer(function(request,response){
   
         response.writeHead(200);
         response.end(html);
+      });
+    } else if (pathname === '/login_process') {
+      var body = '';
+      request.on('data', function(data) {
+        body = body + data;
+      });
+      request.on('end', function() {
+        var post = qs.parse(body);
+        if (post.email === 'younhong@kakao.com' && post.password === '77777') {
+          response.writeHead(302, {
+            'Set-Cookie': [
+              `email=${post.email}`,
+              `password=${post.password}`,
+              `nickname=younhong`
+            ],
+            Location: `/`
+          });
+          response.end();
+        } else {
+          response.end('who?');
+        }
+      });
+    } else if (pathname === '/logout_process') {
+      var body = '';
+      request.on('data', function(data) {
+        body = body + data;
+      });
+      request.on('end', function() {
+        var post = qs.parse(body);
+        response.writeHead(302, {
+          'Set-Cookie': [
+            `email=; Max-Age=0`,
+            `password=; Max-Age=0`,
+            `nickname=; Max-Age=0`
+          ],
+          Location: `/`
+        });
+        response.end();
       });
     } else {
       response.writeHead(404);
