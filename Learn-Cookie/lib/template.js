@@ -12,7 +12,7 @@ module.exports = {
             <h1><a href="/">WEB</a></h1>
             ${list}
             ${control}
-            <p>${body}</p>
+            ${body}
           </body>
           </html>
       `;
