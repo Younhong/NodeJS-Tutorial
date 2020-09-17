@@ -16,11 +16,13 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
 app.use(session({
+  HttpOnly: true,
+  secure: true,
   secret: 'asadlfkj!@#!@#dfgasdg',
   resave: false,
   saveUninitialized: true,
   store:new FileStore()
-}))
+}));
 
 app.get('*', function(request, response, next) {
   fs.readdir('./data', function(error, filelist) {
@@ -43,5 +45,5 @@ app.use(function(err, request, response, next) {
 });
 
 app.listen(3000, function() {
-  console.log("Example app listening on port 3000")
+  console.log("Example app listening on port 3000");
 });
