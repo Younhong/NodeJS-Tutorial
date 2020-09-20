@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var path = require('path');
 var sanitizeHtml = require('sanitize-html');
-var fs = require('fs');
 var template = require('../lib/template');
 var auth = require('../lib/auth');
 var db = require('../lib/db');
@@ -118,7 +116,7 @@ router.post('/delete_process', function(request, response) {
     request.flash('error', 'Not your post');
     return response.redirect('/');
   }
-  
+
   db.get('topics').remove({id:id}).write();
   response.redirect('/');
 });
