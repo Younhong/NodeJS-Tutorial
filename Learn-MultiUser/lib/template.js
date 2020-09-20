@@ -1,5 +1,6 @@
 module.exports = {
-  html: function(title, list, body, control, authStatusUI = '<a href="/auth/login">login</a>') {
+  html: function(title, list, body, control, authStatusUI =
+    '<a href="/auth/login">Login</a> | <a href="/auth/register">Register</a>') {
     return `
       <!doctype html>
         <html>
